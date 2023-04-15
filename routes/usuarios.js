@@ -50,7 +50,28 @@ usuarios.route('/')
 
 
 .delete((req, res) => {
-    res.json({mensagem: "DELETE realizado com sucesso"})
+
+    const {matricula, nome, media} = req.body;
+
+    if (!matricula || !nome || !media) {
+        res.status(400).json ({mensagem:"Por favor, preencha todos os campos!"})
+        return;
+    }   
+
+    const db = lerBancoDados();
+
+    const alunoEncontrado = db.find(aluno => aluno.matricula === matricula);
+
+    if (!alunoEncontrado){
+        res.status(404).json({mensagem:"aluno inexistente."})
+        return;
+    }
+
+    const dbAtualizado = db.filter(aluno => aluno.matricula !== matricula)
+
+    gravarBancoDados(dbAtualizado);
+
+    res.status(200).json({mensagem:"Usuário deletado com sucesso!"})
 });
 
 function lerBancoDados(){
