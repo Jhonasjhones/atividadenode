@@ -11,10 +11,35 @@ usuarios.route('/')
     res.status(200).json(db)
 })
 .post((req, res) => {
-    
 
-    res.json({mensagem: "POST realizado com sucesso"})
 
+    const {matricula, nome, media} = req.body;
+
+    if (!matricula || !nome || !media) {
+        res.status(400).json({mensagem: "Por favor, preencha todos os campos."});
+        return;
+    } 
+
+    const db = lerBancoDados();
+
+    const alunoEncontrado = db.find(aluno => aluno.matricula === matricula)
+
+    if (alunoEncontrado){
+        res.status(400).json({mensagem:"usuário já existe!"});
+        return;
+    }
+
+    const novoUsuario = {
+        matricula,
+        nome,
+        media
+    }
+
+    db.push(novoUsuario)
+
+    gravarBancoDados(db);
+
+    res.status(200).json({mensagem:"Novo usuario criado com sucesso!"})
 
 })
 
@@ -35,7 +60,7 @@ function lerBancoDados(){
 }
 
 function gravarBancoDados(db){
-    fs.writeFileSync('./db/db.json', JSON.stringify(db));
+    fs.writeFileSync('./db/db.json', JSON.stringify(db, null, 2));
 }
 
 module.exports = usuarios;
