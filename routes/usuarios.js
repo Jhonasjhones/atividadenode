@@ -45,7 +45,35 @@ usuarios.route('/')
 
 
 .put((req, res) => {
-    res.json({mensagem: "PUT realizado com sucesso"})
+
+    const {matricula, nome, media} = req.body;
+
+    if (!matricula || !nome || !media){
+        res.status(400).json({mensagem:"Por favor, preencha todos os campos!"})
+        return;
+    }
+
+    const db = lerBancoDados();
+
+    const alunoEncontrado = db.find(aluno => aluno.matricula === matricula);
+
+    if (!alunoEncontrado){
+        res.status(404).json({mensagem:"aluno inexistente."})
+        return;
+    }
+
+    const dbModificado = db.filter(aluno => aluno.matricula !== matricula);
+    const alunoModificado = {
+        matricula,
+        nome,
+        media
+    }
+
+    dbModificado.push(alunoModificado);
+
+    gravarBancoDados(dbModificado);
+
+    res.status(200).json({mensagem: "Usuário atualizado com sucesso!"})
 })
 
 
