@@ -7,4 +7,3 @@ app.use (express.json()); //Configuração pra ler em json
 app.use('/usuarios', usuarios);
 
 app.listen(3000);
-
