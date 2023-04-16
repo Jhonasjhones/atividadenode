@@ -5,11 +5,27 @@ const usuarios = express.Router();
 
 usuarios.route('/')
 .get((req, res) => {
-
+    const {nome,media} = req.query
     const db = lerBancoDados();  //retorna o banco de dados
+    
+    
+    if(nome){
+        const dbModificado = db.filter(aluno => aluno.nome.toLowerCase().includes(nome.toLowerCase()))
+        res.status(200).json(dbModificado)
+        return;
+    }
 
+    if(media){
+        const dbModificado = db.filter(aluno=> Number(aluno.media) >= Number(media))
+        res.status(200).json(dbModificado)
+        return;
+    }
     res.status(200).json(db)
+
+    
 })
+
+
 .post((req, res) => {
 
 
